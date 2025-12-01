@@ -5,7 +5,6 @@ open Prelude
 let parse_left = char 'L' *> digits >>| ( ~- )
 let parse_right = char 'R' *> digits
 let parse_line = parse_left <|> parse_right
-let run_parser line = parse_string ~consume:All parse_line line |> Result.get_ok
 
 let dial_states start xs =
   let go curr x = (((curr + x) mod 100) + 100) mod 100 in
@@ -27,12 +26,14 @@ let count_ticks n1 n2 =
   | _ -> if clamp100 n1 <> clamp100 n2 then 1 else 0
 
 let part_1 lines =
-  Seq.map run_parser lines |> dial_states 50
+  Seq.map (run_parser parse_line) lines
+  |> dial_states 50
   |> Seq.filter (( = ) 0)
   |> Seq.length |> string_of_int
 
 let part_2 lines =
-  Seq.map run_parser lines |> abs_states 50 |> pairwise
+  Seq.map (run_parser parse_line) lines
+  |> abs_states 50 |> pairwise
   |> Seq.map (uncurry count_ticks)
   |> Seq.fold_left ( + ) 0 |> string_of_int
 
