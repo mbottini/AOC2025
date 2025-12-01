@@ -1,6 +1,6 @@
-open Aoc_2025.Main_utils
+open AOC2025.Main_utils
 
-let function_table = [| Aoc_2025.Day01.impl |]
+let function_table = [| AOC2025.Day01.impl |]
 
 let () =
   match Sys.argv with
