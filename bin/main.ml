@@ -1,6 +1,7 @@
 open AOC2025.Main_utils
 
-let function_table = [| AOC2025.Day01.impl; AOC2025.Day02.impl |]
+let function_table =
+  [| AOC2025.Day01.impl; AOC2025.Day02.impl; AOC2025.Day03.impl |]
 
 let rec main args =
   match args with
