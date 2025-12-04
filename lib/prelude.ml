@@ -41,3 +41,33 @@ let zip3 xs ys zs =
     | _ -> List.rev acc
   in
   aux [] xs ys zs
+
+let prepend_and_append x xs =
+  List.rev xs |> List.cons x |> List.rev |> List.cons x
+
+let pad_grid xss =
+  let nones =
+    Seq.repeat None
+    |> Seq.take ((List.hd >> List.length) xss + 2)
+    |> List.of_seq
+  in
+  List.map (List.map Option.some) xss
+  |> List.map (prepend_and_append None)
+  |> prepend_and_append nones
+
+let filter_nones (x, ys) = (Option.get x, List.concat_map Option.to_list ys)
+
+let neighbors tss =
+  let inner antes currs posts =
+    let aux a c p =
+      match c with
+      | [ w; o; e ] -> (o, a @ [ w; e ] @ p)
+      | _ -> failwith "Something went very wrong here"
+    in
+    zip3 (triplewise antes) (triplewise currs) (triplewise posts)
+    |> List.map (uncurry3 aux)
+  in
+
+  pad_grid tss |> triplewise
+  |> List.map (tuple3 >> uncurry3 inner)
+  |> List.map (List.map filter_nones)

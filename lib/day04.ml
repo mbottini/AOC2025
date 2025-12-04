@@ -7,36 +7,6 @@ let parse_terrain c =
 
 let parse_line s = String.to_seq s |> Seq.map parse_terrain |> List.of_seq
 let parse_grid lines = List.of_seq lines |> List.map parse_line
-
-let inner antes currs posts =
-  let aux a c p =
-    match c with
-    | [ w; o; e ] -> (o, a @ [ w; e ] @ p)
-    | _ -> failwith "Something went very wrong here"
-  in
-  zip3 (triplewise antes) (triplewise currs) (triplewise posts)
-  |> List.map (uncurry3 aux)
-
-let prepend_and_append x xs =
-  List.rev xs |> List.cons x |> List.rev |> List.cons x
-
-let pad_grid xss =
-  let nones =
-    Seq.repeat None
-    |> Seq.take ((List.hd >> List.length) xss + 2)
-    |> List.of_seq
-  in
-  List.map (List.map Option.some) xss
-  |> List.map (prepend_and_append None)
-  |> prepend_and_append nones
-
-let filter_nones (x, ys) = (Option.get x, List.concat_map Option.to_list ys)
-
-let neighbors tss =
-  pad_grid tss |> triplewise
-  |> List.map (tuple3 >> uncurry3 inner)
-  |> List.map (List.map filter_nones)
-
 let is_paper t = t = Paper
 
 let is_valid_paper (t, ts) =
