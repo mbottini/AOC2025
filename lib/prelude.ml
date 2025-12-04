@@ -55,9 +55,11 @@ let pad_grid xss =
   |> List.map (prepend_and_append None)
   |> prepend_and_append nones
 
-let filter_nones (x, ys) = (Option.get x, List.concat_map Option.to_list ys)
-
 let neighbors tss =
+  let filter_nones (x, ys) =
+    (Option.get x, List.concat_map Option.to_list ys)
+  in
+
   let inner antes currs posts =
     let aux a c p =
       match c with
