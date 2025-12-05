@@ -7,17 +7,15 @@ type tree = { data : rng; left : tree option; right : tree option }
 
 let between a x b = a <= x && x <= b
 
-let is_overlapping { start = x1; stop = y1 } { start = x2; stop = y2 } =
-  between x1 x2 y1 || between x1 y2 y1 || between x2 x1 y2 || between x2 y1 y2
+(* Assumes that the second range's start must be after the first range's start. *)
+let is_overlapping { start = x1; stop = y1 } { start = x2; _ } =
+  between x1 x2 y1
 
 (* Assumes that they are contiguous! Check first! *)
 let merge_rngs { start = x1; stop = y1 } { start = x2; stop = y2 } =
   { start = min x1 x2; stop = max y1 y2 }
 
 let cmp x rng = if x < rng.start then -1 else if x >= rng.stop then 1 else 0
-
-let cmp_tree t1 t2 =
-  if t1.stop < t2.start then -1 else if t2.stop < t1.start then 1 else 0
 
 let rec query_tree tree_opt x =
   match tree_opt with
@@ -44,6 +42,17 @@ let rec tree_to_seq t_opt =
       [ tree_to_seq t.left; Seq.return t.data; tree_to_seq t.right ]
       |> List.to_seq |> Seq.concat
 
+let combine_ranges rngs =
+  let cmp_ranges r1 r2 = Int.compare r1.start r2.start in
+  let rec aux acc xs =
+    match (xs, acc) with
+    | [], _ -> List.rev acc
+    | x :: xs, a :: acc' when is_overlapping a x ->
+        aux (merge_rngs a x :: acc') xs
+    | x :: xs, _ -> aux (x :: acc) xs
+  in
+  match List.sort cmp_ranges rngs with [] -> [] | x :: xs -> aux [ x ] xs
+
 let range_size { start; stop } = stop - start
 
 let parse_range =
@@ -54,7 +63,7 @@ let parse_seq lines =
   let ranges =
     Seq.take_while (String.length >> ( <> ) 0) lines
     |> Seq.map (run_parser parse_range)
-    |> List.of_seq
+    |> List.of_seq |> combine_ranges
   in
   let ingredients =
     Seq.drop_while (String.length >> ( <> ) 0) lines
