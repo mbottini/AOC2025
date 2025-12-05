@@ -53,6 +53,21 @@ let combine_ranges rngs =
   in
   match List.sort cmp_ranges rngs with [] -> [] | x :: xs -> aux [ x ] xs
 
+let split_middle xs =
+  let rec aux acc turtle rabbit =
+    match rabbit with
+    | [] | _ :: [] -> (List.rev acc, List.hd turtle, List.tl turtle)
+    | _ :: _ :: rest -> aux (List.hd turtle :: acc) (List.tl turtle) rest
+  in
+  aux [] xs xs
+
+let rec create_tree xs =
+  match xs with
+  | [] -> None
+  | _ ->
+      let left, middle, right = split_middle xs in
+      Some { data = middle; left = create_tree left; right = create_tree right }
+
 let range_size { start; stop } = stop - start
 
 let parse_range =
@@ -63,13 +78,13 @@ let parse_seq lines =
   let ranges =
     Seq.take_while (String.length >> ( <> ) 0) lines
     |> Seq.map (run_parser parse_range)
-    |> List.of_seq |> combine_ranges
+    |> List.of_seq |> combine_ranges |> create_tree
   in
   let ingredients =
     Seq.drop_while (String.length >> ( <> ) 0) lines
     |> Seq.drop 1 |> Seq.map int_of_string |> List.of_seq
   in
-  (List.fold_left insert_rng None ranges, ingredients)
+  (ranges, ingredients)
 
 let part_1 lines =
   let range_tree, ingredients = parse_seq lines in
