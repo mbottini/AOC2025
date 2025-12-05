@@ -26,15 +26,6 @@ let rec query_tree tree_opt x =
       | _ -> true)
   | None -> false
 
-let rec insert_rng t_opt r =
-  match t_opt with
-  | None -> Some { data = r; left = None; right = None }
-  | Some t when t.data.start > r.stop ->
-      Some { t with left = insert_rng t.left r }
-  | Some t when t.data.stop < r.start ->
-      Some { t with right = insert_rng t.right r }
-  | Some t -> Some { t with data = merge_rngs t.data r }
-
 let rec tree_to_seq t_opt =
   match t_opt with
   | None -> Seq.empty
