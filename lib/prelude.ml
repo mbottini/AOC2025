@@ -73,3 +73,8 @@ let neighbors tss =
   pad_grid tss |> triplewise
   |> List.map (tuple3 >> uncurry3 inner)
   |> List.map (List.map filter_nones)
+
+let foldl1 f sq =
+  match Seq.uncons sq with
+  | Some (x, xs) -> Seq.fold_left f x xs
+  | None -> failwith "empty sequence"

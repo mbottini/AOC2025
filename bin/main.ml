@@ -7,6 +7,7 @@ let function_table =
     AOC2025.Day03.impl;
     AOC2025.Day04.impl;
     AOC2025.Day05.impl;
+    AOC2025.Day06.impl;
   |]
 
 let rec main args =
