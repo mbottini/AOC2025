@@ -78,3 +78,8 @@ let foldl1 f sq =
   match Seq.uncons sq with
   | Some (x, xs) -> Seq.fold_left f x xs
   | None -> failwith "empty sequence"
+
+let scanl1 f sq =
+  match Seq.uncons sq with
+  | Some (x, xs) -> Seq.scan f x xs
+  | None -> failwith "empty sequence"

@@ -19,7 +19,7 @@
  (name aoc_2025)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml str angstrom)
+ (depends ocaml str angstrom unionFind)
  (tags
   ("add topics" "to describe" your project)))
 
