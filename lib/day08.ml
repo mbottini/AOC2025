@@ -17,7 +17,6 @@ end
 module VectorMap = Map.Make (Vector)
 module VectorSet = Set.Make (Vector)
 module VectorVectorSet = Set.Make (VectorSet) (* aaaaaaaaaa *)
-module FrequencyMap = Frequency_map.Make (VectorMap)
 
 let distance { x = x1; y = y1; z = z1 } { x = x2; y = y2; z = z2 } =
   let square x = x * x in
